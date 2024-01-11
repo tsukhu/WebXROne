@@ -1,0 +1,117 @@
+[gd_scene load_steps=16 format=3 uid="uid://dywyh7ufgusrf"]
+
+[ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="1_ns7jp"]
+[ext_resource type="PackedScene" uid="uid://bl2nuu3qhlb5k" path="res://addons/godot-xr-tools/functions/movement_direct.tscn" id="2_4m1ux"]
+[ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="3_gggkb"]
+[ext_resource type="PackedScene" uid="uid://b6bk2pj8vbj28" path="res://addons/godot-xr-tools/functions/movement_turn.tscn" id="4_ln42l"]
+[ext_resource type="PackedScene" uid="uid://diyu06cw06syv" path="res://addons/godot-xr-tools/player/player_body.tscn" id="5_ox4iw"]
+[ext_resource type="Script" path="res://addons/godot-xr-tools/player/player_body.gd" id="6_uc54g"]
+[ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="7_cujhn"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dodjj"]
+albedo_color = Color(0.0392157, 0.372549, 0.196078, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_fdr6l"]
+material = SubResource("StandardMaterial3D_dodjj")
+size = Vector2(100, 100)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8se44"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fp1e8"]
+size = Vector3(5, 5, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_t08ab"]
+size = Vector3(5, 5, 5)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_n3mal"]
+
+[sub_resource type="Sky" id="Sky_ab5tp"]
+sky_material = SubResource("ProceduralSkyMaterial_n3mal")
+
+[sub_resource type="Environment" id="Environment_2ymla"]
+background_mode = 2
+sky = SubResource("Sky_ab5tp")
+
+[node name="Main" type="Node3D"]
+
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, 0)
+tracker = &"left_hand"
+pose = &"aim"
+
+[node name="LeftHand" parent="XROrigin3D/LeftController" instance=ExtResource("1_ns7jp")]
+
+[node name="MovementDirect" parent="XROrigin3D/LeftController" instance=ExtResource("2_4m1ux")]
+strafe = true
+input_action = "thumbstick"
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, 0)
+tracker = &"right_hand"
+
+[node name="RightHand" parent="XROrigin3D/RightController" instance=ExtResource("3_gggkb")]
+
+[node name="MovementDirect" parent="XROrigin3D/RightController" instance=ExtResource("2_4m1ux")]
+input_action = "thumbstick"
+
+[node name="MovementTurn" parent="XROrigin3D/RightController" instance=ExtResource("4_ln42l")]
+input_action = "thumbstick"
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+
+[node name="PlayerBody" type="CharacterBody3D" parent="XROrigin3D" groups=["player_body"] instance=ExtResource("5_ox4iw")]
+process_priority = -100
+process_physics_priority = -100
+top_level = true
+collision_layer = 524288
+collision_mask = 1023
+script = ExtResource("6_uc54g")
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("PlaneMesh_fdr6l")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_8se44")
+
+[node name="Block" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.7153, 2.48458, -19.2738)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Block"]
+mesh = SubResource("BoxMesh_fp1e8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Block"]
+shape = SubResource("BoxShape3D_t08ab")
+
+[node name="Block2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.44867, -0.948568, -18.3438)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Block2"]
+mesh = SubResource("BoxMesh_fp1e8")
+skeleton = NodePath("../../Block2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Block2"]
+shape = SubResource("BoxShape3D_t08ab")
+
+[node name="Block3" type="StaticBody3D" parent="."]
+transform = Transform3D(0.0198819, 0.00612104, 0.999784, -0.294241, 0.955732, 0, -0.955525, -0.294177, 0.0208029, -17.4731, -1.70274, 7.2775)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Block3"]
+mesh = SubResource("BoxMesh_fp1e8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Block3"]
+shape = SubResource("BoxShape3D_t08ab")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.911769, -0.410703, -0.00109804, 0.168462, 0.371548, 0.913002, -0.374565, -0.832632, 0.407953, -3.68254, 16.8592, -1.03054)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_2ymla")
+
+[node name="StartXR" parent="." instance=ExtResource("7_cujhn")]
